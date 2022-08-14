@@ -1,12 +1,17 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_app/Combonants/Combonant.dart';
 import 'package:social_app/Cubits/SocialCubits.dart';
 import 'package:social_app/Cubits/SocialStates.dart';
+import 'package:social_app/Modules/CommentScreen/CommentScreen.dart';
 import 'package:social_app/Shared/styles/iconbroken.dart';
 import 'package:social_app/model/postModel.dart';
 
 class FeedsScreen extends StatelessWidget {
+  var textController = TextEditingController();
+
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SocialCubit,SocialStates>(
@@ -74,7 +79,7 @@ class FeedsScreen extends StatelessWidget {
                   CircleAvatar(
                     radius: 25,
                     backgroundImage: NetworkImage(
-                        "${model.image}"),
+                        "${SocialCubit.get(context).userModel!.image}"),
                   ),
                   SizedBox(
                     width: 10,
@@ -199,7 +204,7 @@ class FeedsScreen extends StatelessWidget {
                               Icon(IconBroken.Heart,
                                   size: 18, color: Colors.red),
                               Text(
-                                '${SocialCubit.get(context).likes[index]}',
+                                '${SocialCubit.get(context).likes[index]} Likes',
                                 style: TextStyle(color: Colors.grey),
                               )
                             ],
@@ -244,7 +249,59 @@ class FeedsScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: InkWell(
-                      onTap: () {},
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(IconBroken.Heart,color: Colors.red,size: 18,),
+                          Text("Like",style:TextStyle(color: Colors.grey[500])),
+                        ],
+                      ),
+                      onTap: (){
+                        SocialCubit.get(context).likePost(SocialCubit.get(context).postsId[index]);
+                      },
+                    ),
+                  ),
+                  Expanded(
+                    child: InkWell(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(IconBroken.Chat,color: Colors.amber,size: 18,),
+                          Text("Comment",style:TextStyle(color: Colors.grey[500])),
+                        ],
+                      ),
+                      onTap: (){
+                        SocialCubit.get(context).ShowAppthem(context);
+                      },
+                    ),
+                  ),
+                  Expanded(
+                    child: InkWell(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(IconBroken.Send,color: Colors.blue,size: 18,),
+                          Text("Share",style:TextStyle(color: Colors.grey[500])),
+                        ],
+                      ),
+                      onTap: (){},
+                    ),
+                  ),
+
+
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5.0),
+                child: Container(
+                  color: Colors.grey[300],
+                  height: 1,
+                  width: MediaQuery.of(context).size.width,
+                ),
+              ),
+              Row(
+                children: [
+                  Expanded(
                       child: Row(
                         children: [
                           CircleAvatar(
@@ -255,37 +312,55 @@ class FeedsScreen extends StatelessWidget {
                           SizedBox(
                             width: 10,
                           ),
-                          Text(
-                            "write a comment...",
-                            style: TextStyle(fontSize: 10, color: Colors.grey),
-                          ),
+                          Expanded(
+                            child: Container(
+                              height: MediaQuery.of(context).size.height*0.04,
+                              decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: Colors.grey,
+                                      width: 0.7
+                                  ),
+                                  borderRadius: BorderRadius.circular(15)
+                              ),
+                              clipBehavior: Clip.antiAliasWithSaveLayer,
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                                      child: TextFormField(
+                                        style: TextStyle(fontSize: 12),
+                                        controller: textController,
+                                        decoration: InputDecoration(
+                                          border: InputBorder.none,
+                                          hintText: 'Write Your Comment Here ',
+                                          hintStyle: TextStyle(fontSize: 10,color: Colors.grey[400])
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  MaterialButton(
+                                    onPressed: () {
+                                    },
+                                    minWidth: 1,
+                                    child: Icon(
+                                      IconBroken.Arrow___Right_Square, size: 16, color: Colors.blue,),
+                                  )
+                                ],
+                              ),
+                            )
+                          )
                         ],
                       ),
-                    ),
+
                   ),
                   InkWell(
-                    child: Row(
-                      children: [
-                        Icon(IconBroken.Heart, size: 15, color: Colors.red),
-                        Text(
-                          'Like',
-                          style: TextStyle(color: Colors.grey,fontSize: 11),
-                        )
-                      ],
-                    ),
+                    child: Icon(IconBroken.Camera, size: 18, color: Colors.red),
                     onTap: () {},
                   ),
                   SizedBox(width: 10,),
                   InkWell(
-                    child: Row(
-                      children: [
-                        Icon(IconBroken.Chat, size: 15, color: Colors.amber),
-                        Text(
-                          'Comment',
-                          style: TextStyle(color: Colors.grey,fontSize: 11),
-                        )
-                      ],
-                    ),
+                    child: Icon(Icons.emoji_emotions_outlined, size: 18, color: Colors.amber),
                     onTap: () {},
                   ),
                 ],

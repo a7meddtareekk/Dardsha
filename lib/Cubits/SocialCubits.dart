@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:social_app/Cubits/SocialStates.dart';
@@ -12,10 +13,12 @@ import 'package:social_app/Modules/NewPostScreen/NewPostScreen.dart';
 import 'package:social_app/Modules/chats/Chats.dart';
 import 'package:social_app/Modules/feeds/Feeds.dart';
 import 'package:social_app/Modules/settings/Settings.dart';
+import 'package:social_app/model/CommentModel.dart';
 import 'package:social_app/model/messageModel.dart';
 import 'package:social_app/model/postModel.dart';
 import 'package:social_app/model/socialUserModel.dart';
 import '../Combonants/Combonant.dart';
+import '../Modules/CommentScreen/CommentScreen.dart';
 import '../Modules/users/Users.dart';
 import '../Shared/CasheHelper.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -307,6 +310,53 @@ class SocialCubit extends Cubit<SocialStates> {
       emit(SocialLikePostsErrorState(onError.toString()));
     });
   }
+  List<CommentModel>comment = [];
+  //List<int>comments = [];
+
+  void CommentPost({
+   required String postId,
+
+   required String dateTime,
+   String ? comment
+  }) {
+
+    CommentModel commentModel=CommentModel(
+      dateTime: dateTime,
+      text: comment,
+      image: userModel!.image,
+      name: userModel!.name,
+    );
+    emit(SocialCommentPostsLoadingState());
+    FirebaseFirestore.instance
+        .collection('posts')
+        .doc(postId)
+        .collection('comment')
+        .add(commentModel.toMap())
+        .then((value) {
+      emit(SocialCommentPostsSuccessState());
+    })
+        .catchError((onError) {
+      emit(SocialCommentPostsErrorState(onError.toString()));
+    });
+  }
+
+
+  void getComments(postId) {
+    emit(SocialGetCommentPostsLoadingState());
+    FirebaseFirestore.instance
+        .collection('posts')
+        .doc(postId)
+        .collection("comment")
+        .orderBy('dateTime')
+        .snapshots()
+        .listen((event) {
+      comment=[];
+      event.docs.forEach((element) {
+        comment.add(CommentModel.fromJson(element.data()));
+        emit(SocialGetCommentPostsSuccessState());
+      });
+    });
+  }
 
 
   List<SocialUserModel>users = [];
@@ -397,5 +447,9 @@ class SocialCubit extends Cubit<SocialStates> {
 
     ;
   }
-
+  ShowAppthem(context){
+    showBottomSheet(builder: (buildContext){
+      //return ShowBottomSheet();
+      return CommentScreen(postId: userModel!.uId,); }, context: context);
+  }
 }
