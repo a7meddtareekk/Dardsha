@@ -10,8 +10,7 @@ import 'package:social_app/model/postModel.dart';
 
 class FeedsScreen extends StatelessWidget {
   var textController = TextEditingController();
-
-
+  List<TextEditingController> ttfcontroller=[];
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SocialCubit,SocialStates>(
@@ -52,7 +51,9 @@ class FeedsScreen extends StatelessWidget {
               ListView.separated(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) => buildPostItem(SocialCubit.get(context).posts[index],context,index),
+                itemBuilder: (context, index){
+                  ttfcontroller.add(new TextEditingController());
+                  return buildPostItem(SocialCubit.get(context).posts[index],context,index);},
                 itemCount: SocialCubit.get(context).posts.length,
                 separatorBuilder: (BuildContext context, int index)=>SizedBox(height: 10,),
               ),
@@ -225,13 +226,15 @@ class FeedsScreen extends StatelessWidget {
                               Icon(IconBroken.Chat,
                                   size: 18, color: Colors.amber),
                               Text(
-                                '0 comment',
+                                '${SocialCubit.get(context).likes[index]} comment',
                                 style: TextStyle(color: Colors.grey),
                               )
                             ],
                           ),
                         ),
-                        onTap: () {},
+                        onTap: () {
+
+                        },
                       ),
                     ),
                   ],
@@ -271,7 +274,7 @@ class FeedsScreen extends StatelessWidget {
                         ],
                       ),
                       onTap: (){
-                        SocialCubit.get(context).ShowAppthem(context);
+                        navigateTo(context, CommentScreen(postId: SocialCubit.get(context).postsId[index]));
                       },
                     ),
                   ),
@@ -330,7 +333,7 @@ class FeedsScreen extends StatelessWidget {
                                       padding: const EdgeInsets.symmetric(horizontal: 15.0),
                                       child: TextFormField(
                                         style: TextStyle(fontSize: 12),
-                                        controller: textController,
+                                        controller: ttfcontroller[index],
                                         decoration: InputDecoration(
                                           border: InputBorder.none,
                                           hintText: 'Write Your Comment Here ',
@@ -341,6 +344,10 @@ class FeedsScreen extends StatelessWidget {
                                   ),
                                   MaterialButton(
                                     onPressed: () {
+                                      SocialCubit.get(context).CommentPost(
+                                          postId: SocialCubit.get(context).postsId[index],
+                                          dateTime:DateTime.now().toString(),
+                                          comment: ttfcontroller[index].text );
                                     },
                                     minWidth: 1,
                                     child: Icon(

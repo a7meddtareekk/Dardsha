@@ -267,15 +267,91 @@ class SocialCubit extends Cubit<SocialStates> {
   List<PostModel>posts = [];
   List<String>postsId = [];
   List<int>likes = [];
+  List<int>commenttss = [];
 
-  void getPosts() {
+  // void getPosts() {
+  //   FirebaseFirestore.instance
+  //       .collection('posts')
+  //       .orderBy('dateTime')
+  //       .get()
+  //       .then((value) {
+  //     value.docs.forEach((element) {
+  //       element.reference
+  //           .collection('likes')
+  //
+  //           .get()
+  //           .then((value) {
+  //         likes.add(value.docs.length);
+  //         postsId.add(element.id);
+  //         posts.add(PostModel.fromJson(element.data()));
+  //       })
+  //           .catchError((onError) {
+  //
+  //       });
+  //     });
+  //     emit(SocialGetPostsSuccessState());
+  //   })
+  //       .catchError((onError) {
+  //     emit(SocialGetPostsErrorState(onError.toString()));
+  //   });
+  //   FirebaseFirestore.instance
+  //       .collection('posts')
+  //       .get()
+  //       .then((value) {
+  //     value.docs.forEach((element) {
+  //       element.reference
+  //           .collection('comment')
+  //
+  //           .get()
+  //           .then((value) {
+  //         commenttss.add(value.docs.length);
+  //         postsId.add(element.id);
+  //
+  //       })
+  //           .catchError((onError) {
+  //
+  //       });
+  //
+  //     });
+  //     emit(SocialCommentOnPostsSuccessState());
+  //   })
+  //       .catchError((onError) {
+  //     emit(SocialCommentOnPostsErrorState(onError.toString()));
+  //   });
+  // }
+  // void getPosts() {
+  //   FirebaseFirestore.instance
+  //       .collection('posts')
+  //       .orderBy('dateTime', descending: true)
+  //       .snapshots()
+  //       .listen((event) async {
+  //     event.docs.forEach((element) async {
+  //       posts.add(PostModel.fromJson(element.data()));
+  //       var likes = await element.reference.collection('likes').get();
+  //       var comments = await element.reference.collection('comments').get();
+  //       await FirebaseFirestore.instance.collection('posts').doc(element.id)
+  //           .update(({
+  //         'likes':likes.docs.length,
+  //         'comments':comments.docs.length,
+  //         'postId': element.id,
+  //       }));
+  //     });
+  //     emit(SocialGetPostsSuccessState());
+  //
+  //   });
+  //
+  // }
+
+  void getPosts(){
     FirebaseFirestore.instance
         .collection('posts')
+        .orderBy('dateTime')
         .get()
         .then((value) {
       value.docs.forEach((element) {
         element.reference
             .collection('likes')
+
             .get()
             .then((value) {
           likes.add(value.docs.length);
@@ -293,7 +369,6 @@ class SocialCubit extends Cubit<SocialStates> {
     });
   }
 
-
   void likePost(String postId) {
     FirebaseFirestore.instance
         .collection('posts')
@@ -310,8 +385,12 @@ class SocialCubit extends Cubit<SocialStates> {
       emit(SocialLikePostsErrorState(onError.toString()));
     });
   }
+
+
   List<CommentModel>comment = [];
+
   //List<int>comments = [];
+  CommentModel? commentModel;
 
   void CommentPost({
    required String postId,
@@ -333,6 +412,7 @@ class SocialCubit extends Cubit<SocialStates> {
         .collection('comment')
         .add(commentModel.toMap())
         .then((value) {
+
       emit(SocialCommentPostsSuccessState());
     })
         .catchError((onError) {
@@ -447,9 +527,10 @@ class SocialCubit extends Cubit<SocialStates> {
 
     ;
   }
+  PostModel? postModel;
   ShowAppthem(context){
     showBottomSheet(builder: (buildContext){
       //return ShowBottomSheet();
-      return CommentScreen(postId: userModel!.uId,); }, context: context);
+      return CommentScreen( ); }, context: context);
   }
 }

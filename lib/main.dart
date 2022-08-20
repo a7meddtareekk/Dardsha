@@ -54,6 +54,8 @@ class MyApp extends StatelessWidget {
   String? uId;
   bool ? isDarkMode;
 
+  String? postId;
+
   MyApp(this.startWidget, this.isDarkMode,String? uId, {Key? key}) : super(key: key) ;
 
   // This widget is the root of your application.
@@ -65,7 +67,7 @@ class MyApp extends StatelessWidget {
 
         ),
         BlocProvider(
-            create: ( context) => SocialCubit()..getUserData(uId)..getPosts())
+            create: ( context) => SocialCubit()..getUserData(uId)..getPosts()..getComments(postId))
       ],
       child: BlocConsumer<AppCubit, AppStates>(
         listener: ( context, state) {},

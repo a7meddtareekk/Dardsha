@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_app/Combonants/Combonant.dart';
 import 'package:social_app/Cubits/SocialCubits.dart';
 import 'package:social_app/Cubits/SocialStates.dart';
 import 'package:social_app/model/CommentModel.dart';
@@ -12,29 +13,44 @@ class CommentScreen extends StatelessWidget {
  var textController=TextEditingController();
 CommentModel? commentModel;
  SocialUserModel? userModel;
- String? postId;
 
- CommentScreen({this.postId});
+ var postId;
+ int? num;
+
+ String? postUid;
+ List<TextEditingController> ttfcontroller=[];
+
+
+ CommentScreen({this.postId, this.postUid,this.commentModel});
+
 
   @override
   Widget build(BuildContext context) {
     String? postId = this.postId;
+
     return Builder(
       builder:(context) {
+       // SocialCubit.get(context).getComments(SocialCubit.get(context).postsId[index]);
         SocialCubit.get(context).getComments(postId);
+        //SocialCubit.get(context).getUserData(postUid);
+
         return BlocConsumer<SocialCubit,SocialStates>(
         listener: (BuildContext context, state) {  },
         builder: (BuildContext context, Object? state) {
-
+        //  postId=SocialCubit.get(context).postsId[index];
           return Scaffold(
+            appBar: defultAppBar(context: context,title: 'Comments'),
             body: Column(
               children: [
                 Expanded(
                   child: ListView.separated(
                     shrinkWrap: true,
                       itemBuilder: (context,index){
-                      var comment=SocialCubit.get(context).comment[index];
-                      return buildCommentItem(comment);},
+                        //num=index;
+                        ttfcontroller.add(new TextEditingController());
+                        List<CommentModel> comments = SocialCubit.get(context).comment;
+                      //var comment=SocialCubit.get(context).comment[index];
+                      return buildCommentItem(comments[index]);},
                       separatorBuilder: (BuildContext context,index)=>SizedBox(height: 5,),
                       itemCount: SocialCubit.get(context)
                           .comment
@@ -84,9 +100,10 @@ CommentModel? commentModel;
                                     MaterialButton(
                                       onPressed: () {
                                         SocialCubit.get(context).CommentPost(
-                                            postId: SocialCubit.get(context).userModel!.uId!,
+                                            postId: postId!,
                                             comment: textController.text,
                                             dateTime: DateTime.now().toString());
+                                        textController.clear();
                                       },
                                       minWidth: 1,
                                       child: Icon(

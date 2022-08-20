@@ -27,9 +27,11 @@ class NewPostScreen extends StatelessWidget {
                     .PostImage == null) {
                   SocialCubit.get(context).CreatePost(
                       dateTime: now.toString(), text: textController.text);
+                  Navigator.pop(context);
                 } else {
                   SocialCubit.get(context).UploadPostImage(
                       dateTime: now.toString(), text: textController.text);
+                  Navigator.pop(context);
                 }
               }, text: "POST")
             ],
